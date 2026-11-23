@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Módulos | Academy Infinite Math{% endblock %}
+{% block content %}
+<section class="page-hero compact-hero">
+  <div>
+    <span class="eyebrow">Trilha completa</span>
+    <h2>Aprenda matemática construindo modelos</h2>
+    <p>Cinco módulos progressivos conectam fundamentos, álgebra linear, sequências, filas e o ciclo completo da modelagem matemática.</p>
+  </div>
+  <div class="hero-stat"><strong>5</strong><span>módulos</span></div>
+</section>
+
+<section class="catalog-section">
+  <div class="catalog-grid">
+    {% for module in modules %}
+    <article class="catalog-card {% if module.number == 5 %}featured-module{% endif %}">
+      <div class="catalog-card-top">
+        <span class="module-number">Módulo {{ '%02d'|format(module.number) }}</span>
+        <span class="level-pill lvl-{{ [module.number, 4]|min }}">{{ module.level }}</span>
+      </div>
+      <div class="catalog-icon">{{ module.icon }}</div>
+      <h3>{{ module.title }}</h3>
+      <p>{{ module.summary }}</p>
+      <div class="objective-preview">
+        {% for objective in module.objectives[:2] %}<span>✓ {{ objective }}</span>{% endfor %}
+      </div>
+      <div class="card-actions">
+        <a class="btn btn-primary" href="{{ url_for('module_detail', slug=module.slug) }}">Abrir módulo</a>
+        <a class="text-action" href="{{ url_for('quiz_detail', slug=module.slug) }}">Fazer quiz →</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

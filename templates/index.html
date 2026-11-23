@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Academy Infinite Math Ultimate - Modelagem & Simulação Matemática</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Plataforma interativa de Modelagem e Simulação Matemática com módulos, quizzes e acompanhamento de progresso.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -31,6 +33,7 @@
         <a href="#lab-simuladores" class="nav-item">🧪 Simuladores</a>
         <a href="#exercicios" class="nav-item">💡 Exercícios</a>
         <a href="#quiz" class="nav-item">🎯 Quiz por Nível</a>
+        <a href="{{ url_for('modules_page') }}" class="nav-item">🧭 Trilha Completa</a>
         <a href="#certificado" class="nav-item cert-link">🎓 Certificado</a>
       </nav>
 
@@ -92,8 +95,8 @@
           <input type="text" id="authName" placeholder="Ex: Luan Gabriel Lins Galvão">
         </div>
         <div class="form-group">
-          <label for="authLoginUser">Login (Usuário ou E-mail)</label>
-          <input type="text" id="authLoginUser" required placeholder="ex: luan.galvao ou seu@email.com">
+          <label for="authLoginUser">E-mail</label>
+          <input type="email" id="authLoginUser" required placeholder="seu@email.com">
         </div>
         <div class="form-group">
           <label for="authPass">Senha</label>
@@ -114,7 +117,7 @@
     <div class="hero-content">
       <div class="hero-badge">Ementa Completa • Prof. Marcelo Lopes • 4 Unidades</div>
       <h2>Modelagem e Simulação Matemática por Módulos & Níveis</h2>
-      <p>Do <strong>Nível Iniciante (Conjuntos & Lógica)</strong> ao <strong>Nível Master (Sequências P.A./P.G. & Teoria de Filas)</strong>, passando por <strong>Espaços Euclidianos</strong> e <strong>Transformações Lineares</strong> com videoaulas, exercícios comentados, quiz por nível e mentoria da <strong>Tutora IA Camile Dias</strong>!</p>
+      <p>Do <strong>Nível Iniciante (Conjuntos & Lógica)</strong> ao <strong>Nível Especialista (Modelagem Matemática Aplicada)</strong>, passando por <strong>Espaços Euclidianos</strong>, <strong>Transformações Lineares</strong>, <strong>P.A./P.G.</strong> e <strong>Teoria de Filas</strong> com videoaulas, exercícios comentados, quiz por nível e mentoria da <strong>Tutora IA Camile Dias</strong>!</p>
       <div class="hero-actions">
         <a href="#modulos" class="btn btn-primary">📚 Ver Módulos por Nível</a>
         <a href="#quiz" class="btn btn-secondary">🎯 Fazer Quiz por Módulo</a>
@@ -122,7 +125,7 @@
     </div>
     <div class="hero-card">
       <div class="card-icon">🇧🇷</div>
-      <h3 id="welcomeUserTitle">Trilha Completa (4 Níveis)</h3>
+      <h3 id="welcomeUserTitle">Trilha Completa (5 Níveis)</h3>
       <p id="welcomeUserSub">Unijorge Salvador • Progresso Geral:</p>
       <div class="progress-bar-container">
         <div class="progress-bar-fill" id="mainProgressFill" style="width: 80%;">80%</div>
@@ -226,6 +229,27 @@
             <button type="button" class="btn-mod-jump" onclick="jumpToSectionWithFilter('videos', 'mod4')">🎥 Vídeos</button>
             <button type="button" class="btn-mod-jump" onclick="jumpToSectionWithFilter('exercicios', 'mod4')">💡 Exercícios</button>
             <button type="button" class="btn-mod-jump primary-jump" onclick="jumpToQuizModule('mod4')">🎯 Quiz Nível 4</button>
+          </div>
+        </article>
+
+        <!-- Módulo 5 - Modelagem Matemática Aplicada -->
+        <article class="module-card level-card-5">
+          <div class="module-top-row">
+            <span class="module-badge">Trilha Aplicada • Módulo 05</span>
+            <span class="level-pill lvl-4">🧩 Nível 5: Especialista</span>
+          </div>
+          <div class="module-icon">🧩</div>
+          <h3>Modelagem Matemática Aplicada</h3>
+          <p>Do problema real ao modelo: hipóteses, calibração, validação, simulação e decisão.</p>
+          <ul class="topic-list">
+            <li><strong>5.1 Ciclo de Modelagem:</strong> Problema, variáveis, parâmetros, hipóteses e formulação.</li>
+            <li><strong>5.2 Modelos:</strong> Crescimento linear, exponencial e logístico.</li>
+            <li><strong>5.3 Validação:</strong> Resíduos, erro, cenários e análise de sensibilidade.</li>
+          </ul>
+          <div class="module-footer-btns">
+            <a class="btn-mod-jump" href="{{ url_for('module_detail', slug='modelagem-matematica') }}">📖 Estudar</a>
+            <a class="btn-mod-jump" href="{{ url_for('quizzes_page') }}">🧭 Ver trilha</a>
+            <a class="btn-mod-jump primary-jump" href="{{ url_for('quiz_detail', slug='modelagem-matematica') }}">🎯 Quiz de Modelagem</a>
           </div>
         </article>
       </div>
@@ -388,7 +412,7 @@
       <div class="section-header">
         <span class="tag-title">Inteligência Artificial Pedagógica</span>
         <h2>Módulo Dicas IA • Tutora Camile Dias</h2>
-        <p>Tire dúvidas de todos os 4 módulos (Conjuntos, Lógica, Espaços Euclidianos, Transformações Lineares, P.A./P.G. e Teoria de Filas).</p>
+        <p>Tire dúvidas dos 5 módulos: Conjuntos, Lógica, Espaços Euclidianos, Transformações Lineares, P.A./P.G., Teoria de Filas e Modelagem Matemática Aplicada.</p>
       </div>
 
       <div class="tutor-ia-card">
@@ -823,6 +847,10 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
           <span class="qmod-lvl">Nível 4 • Master</span>
           <strong>Mód. 4: P.A., P.G. & Filas</strong>
         </button>
+        <a class="quiz-mod-btn quiz-page-link" href="{{ url_for('quiz_detail', slug='modelagem-matematica') }}">
+          <span class="qmod-lvl">Nível 5 • Especialista</span>
+          <strong>Mód. 5: Modelagem Matemática →</strong>
+        </a>
       </div>
 
       <div class="quiz-card-wrapper">
@@ -877,7 +905,7 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
           </div>
 
           <div class="cert-title">CERTIFICADO DE EXCELÊNCIA ACADÊMICA</div>
-          <div class="cert-subtitle">MODELAGEM E SIMULAÇÃO MATEMÁTICA • UNIDADES I A IV</div>
+          <div class="cert-subtitle">MODELAGEM E SIMULAÇÃO MATEMÁTICA • TRILHA COMPLETA</div>
 
           <div class="cert-body-text">
             Certificamos que o(a) estudante
@@ -888,9 +916,9 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
           </div>
 
           <div class="cert-description">
-            Concluiu com êxito os 4 níveis da trilha de <strong>Teoria dos Conjuntos e Lógica Matemática (Nível Iniciante)</strong>, 
-            <strong>Espaços Euclidianos (Nível Intermediário)</strong>, <strong>Transformações Lineares e Isomorfismos (Nível Avançado)</strong> 
-            e <strong>Sequências P.A./P.G. e Teoria de Filas (Nível Master)</strong> com mentoria da <strong>Tutora IA Camile Dias</strong>, 
+            Concluiu com êxito os 5 níveis da trilha de <strong>Teoria dos Conjuntos e Lógica Matemática (Nível Iniciante)</strong>, 
+            <strong>Espaços Euclidianos (Nível Intermediário)</strong>, <strong>Transformações Lineares e Isomorfismos (Nível Avançado)</strong>, 
+            <strong>Sequências P.A./P.G. e Teoria de Filas (Nível Master)</strong> e <strong>Modelagem Matemática Aplicada (Nível Especialista)</strong> com mentoria da <strong>Tutora IA Camile Dias</strong>, 
             na disciplina ministrada pelo <strong>Prof. Marcelo Lopes</strong> (Centro Universitário Jorge Amado).
           </div>
 
@@ -901,7 +929,7 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
             </div>
             <div class="meta-item">
               <span class="meta-label">Carga Horária</span>
-              <span class="meta-val">60 Horas • 4 Níveis</span>
+              <span class="meta-val">75 Horas • 5 Níveis</span>
             </div>
             <div class="meta-item">
               <span class="meta-label">Validação Digital</span>
@@ -965,7 +993,7 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
       <div class="footer-bottom">
         <p>&copy; 2026 Academy Infinite Math Ultimate • Todos os direitos reservados.</p>
         <div class="footer-badges">
-          <span>4 Módulos & Níveis</span>
+          <span>5 Módulos & Níveis</span>
           <span>Tutora IA Camile Dias</span>
           <span>Cores Brasil & Bahia</span>
         </div>
@@ -976,6 +1004,7 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
   <!-- Toast de Notificação -->
   <div id="toastNotification" class="toast hidden"></div>
 
-  <script src="script.js"></script>
+  <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>
