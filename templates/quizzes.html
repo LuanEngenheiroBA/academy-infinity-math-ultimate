@@ -11,16 +11,16 @@
 </section>
 
 <section class="quiz-catalog">
-  {% for module in modules %}
-  <a class="quiz-link-card" href="{{ url_for('quiz_detail', slug=module.slug) }}">
+  {% for module in module_states %}
+  {% if module.unlocked %}<a class="quiz-link-card" href="{{ url_for('quiz_detail', slug=module.slug) }}">{% else %}<div class="quiz-link-card locked-card">{% endif %}
     <div class="quiz-link-icon">{{ module.icon }}</div>
     <div class="quiz-link-copy">
       <span>Módulo {{ module.number }} • {{ module.level }}</span>
       <h3>{{ module.title }}</h3>
-      <p>{{ 5 if module.number == 5 else 3 }} questões • correção comentada</p>
+      <p>{% if module.completed %}Melhor resultado: {{ module.best_score }}%{% elif module.unlocked %}{{ 5 if module.number == 5 else 3 }} questões • correção comentada{% else %}Conclua o módulo anterior para desbloquear{% endif %}</p>
     </div>
-    <span class="quiz-arrow">→</span>
-  </a>
+    <span class="quiz-arrow">{{ '✓' if module.completed else ('▶' if module.unlocked else '🔒') }}</span>
+  {% if module.unlocked %}</a>{% else %}</div>{% endif %}
   {% endfor %}
 </section>
 {% endblock %}

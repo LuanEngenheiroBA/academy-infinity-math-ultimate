@@ -64,12 +64,14 @@
       progressBar.style.width = "100%";
       resultPanel.classList.remove("hidden");
       resultPanel.classList.toggle("passed", data.passed);
+      document.querySelectorAll('[data-stat="xp"]').forEach((element) => { element.textContent = data.stats.xp; });
+      document.querySelectorAll('[data-stat="streak"]').forEach((element) => { element.textContent = data.stats.streak; });
       resultPanel.innerHTML = `
         <div class="result-score">${data.percentage}%</div>
         <div><span class="eyebrow">${data.passed ? "Módulo concluído" : "Continue praticando"}</span>
         <h3>${data.score} de ${data.total} respostas corretas</h3>
-        <p>${data.saved ? "Seu melhor resultado foi salvo." : "Entre na sua conta para salvar o progresso."}</p></div>
-        <a class="btn btn-primary" href="/quiz">Escolher outro quiz</a>`;
+        <p>Resultado salvo. ${data.xp_earned > 0 ? `Você ganhou ${data.xp_earned} XP.` : "Seu melhor resultado não mudou, então não houve XP adicional."}</p></div>
+        <a class="btn btn-primary" href="/painel">Ver meu progresso</a>`;
       resultPanel.scrollIntoView({ behavior: "smooth", block: "center" });
       submit.hidden = true;
     } catch (error) {

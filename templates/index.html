@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-authenticated="{{ 'true' if current_user else 'false' }}" data-unlocked-count="{{ [stats.completed_modules + 1, stats.total_modules]|min if current_user else 0 }}">
   <!-- Faixa Superior com Cores do Brasil & Bahia -->
   <div class="top-brazil-bahia-bar"></div>
 
@@ -28,24 +28,31 @@
 
       <nav class="nav-links">
         <a href="#modulos" class="nav-item active">📚 Módulos & Níveis</a>
+        {% if current_user %}
         <a href="#videos" class="nav-item">🎥 Aulas YouTube</a>
         <a href="#tutor-ia" class="nav-item tutor-nav-highlight">🤖 Camile Dias IA</a>
         <a href="#lab-simuladores" class="nav-item">🧪 Simuladores</a>
         <a href="#exercicios" class="nav-item">💡 Exercícios</a>
         <a href="#quiz" class="nav-item">🎯 Quiz por Nível</a>
+        <a href="{{ url_for('dashboard') }}" class="nav-item">📊 Meu Painel</a>
+        {% endif %}
         <a href="{{ url_for('modules_page') }}" class="nav-item">🧭 Trilha Completa</a>
-        <a href="#certificado" class="nav-item cert-link">🎓 Certificado</a>
+        {% if current_user %}<a href="#certificado" class="nav-item cert-link">🎓 Certificado</a>{% endif %}
       </nav>
 
       <div class="user-controls">
         <div class="user-stats">
-          <div class="stat-pill streak" title="Ofensiva de estudos">🔥 <span id="streakCount">7</span></div>
-          <div class="stat-pill xp" title="Experiência acumulada">⚡ <span id="xpPoints">300</span> XP</div>
+          <div class="stat-pill streak" title="Ofensiva de estudos">🔥 <span id="streakCount">{{ stats.streak }}</span></div>
+          <div class="stat-pill xp" title="Experiência acumulada">⚡ <span id="xpPoints">{{ stats.xp }}</span> XP</div>
         </div>
-        <button id="authTriggerBtn" class="btn-login-nav" onclick="openAuthModal()">
+        {% if current_user %}
+        <a id="authTriggerBtn" class="btn-login-nav logged-in" href="{{ url_for('dashboard') }}">
           <span id="navUserIcon">👤</span>
-          <span id="navUserText">Entrar</span>
-        </button>
+          <span id="navUserText">{{ current_user.name.split(' ')[0] }}</span>
+        </a>
+        {% else %}
+        <button id="authTriggerBtn" class="btn-login-nav" onclick="openAuthModal()"><span id="navUserIcon">👤</span><span id="navUserText">Entrar</span></button>
+        {% endif %}
       </div>
     </div>
   </header>
@@ -58,11 +65,11 @@
       <div class="modal-header">
         <div class="modal-logo">∞</div>
         <h2 id="modalTitle">Academy Infinite Math Ultimate</h2>
-        <p id="modalSubtitle">Entre para salvar seu progresso por módulo/nível com a Tutora Camile Dias e emitir seu certificado.</p>
+        <p id="modalSubtitle">Entre ou crie uma conta para liberar as aulas, salvar XP, manter sua ofensiva e avançar pela trilha.</p>
       </div>
 
       <!-- Opções de Login com Redes Sociais e GitHub -->
-      <div class="social-auth-group">
+      <div class="social-auth-group hidden">
         <button type="button" class="btn-social btn-github" onclick="socialLogin('GitHub', 'LuanEngenheiroBA')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
           Continuar com GitHub
@@ -84,7 +91,7 @@
         </button>
       </div>
 
-      <div class="auth-divider">
+      <div class="auth-divider hidden">
         <span>ou entre com Login e Senha</span>
       </div>
 
@@ -120,15 +127,16 @@
       <p>Do <strong>Nível Iniciante (Conjuntos & Lógica)</strong> ao <strong>Nível Especialista (Modelagem Matemática Aplicada)</strong>, passando por <strong>Espaços Euclidianos</strong>, <strong>Transformações Lineares</strong>, <strong>P.A./P.G.</strong> e <strong>Teoria de Filas</strong> com videoaulas, exercícios comentados, quiz por nível e mentoria da <strong>Tutora IA Camile Dias</strong>!</p>
       <div class="hero-actions">
         <a href="#modulos" class="btn btn-primary">📚 Ver Módulos por Nível</a>
-        <a href="#quiz" class="btn btn-secondary">🎯 Fazer Quiz por Módulo</a>
+        {% if current_user %}<a href="{{ url_for('dashboard') }}" class="btn btn-secondary">📊 Continuar minha trilha</a>
+        {% else %}<a href="{{ url_for('login_page') }}" class="btn btn-secondary">🔐 Criar conta para começar</a>{% endif %}
       </div>
     </div>
     <div class="hero-card">
       <div class="card-icon">🇧🇷</div>
-      <h3 id="welcomeUserTitle">Trilha Completa (5 Níveis)</h3>
-      <p id="welcomeUserSub">Unijorge Salvador • Progresso Geral:</p>
+      <h3 id="welcomeUserTitle">{% if current_user %}Olá, {{ current_user.name.split(' ')[0] }}!{% else %}Seu progresso começa do zero{% endif %}</h3>
+      <p id="welcomeUserSub">{% if current_user %}{{ stats.completed_modules }} de {{ stats.total_modules }} módulos concluídos{% else %}Crie uma conta para liberar o Módulo 1{% endif %}</p>
       <div class="progress-bar-container">
-        <div class="progress-bar-fill" id="mainProgressFill" style="width: 80%;">80%</div>
+        <div class="progress-bar-fill" id="mainProgressFill" style="width: {{ stats.progress_percent }}%;">{{ stats.progress_percent }}%</div>
       </div>
       <div class="cronograma-mini">
         <span>📅 AV1: 01/10</span> • <span>AV3: 12/11</span> • <span>AV2: 26/11</span> • <span>AV4: 10/12</span>
@@ -255,6 +263,7 @@
       </div>
     </section>
 
+    {% if current_user %}
     <!-- =====================================================================
          SEÇÃO 2: VIDEOAULAS DO YOUTUBE POR MÓDULO E NÍVEL
          ===================================================================== -->
@@ -819,64 +828,22 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
       </div>
     </section>
 
-    <!-- =====================================================================
-         SEÇÃO 6: QUIZ GAMIFICADO POR MÓDULO E NÍVEL
-         ===================================================================== -->
-    <section id="quiz" class="section-box">
-      <div class="section-header">
-        <span class="tag-title">Avaliação Gamificada</span>
-        <h2>Quiz Interativo por Módulo & Nível</h2>
-        <p>Selecione o Módulo e o Nível desejado para testar seus conhecimentos e acumular XP!</p>
+    <section id="quiz" class="section-box quiz-home-cta">
+      <div>
+        <span class="tag-title">Avaliação com progresso real</span>
+        <h2>Quizzes que valem XP e desbloqueiam níveis</h2>
+        <p>Seu melhor resultado gera XP. Ao alcançar 70%, o módulo é concluído e o próximo é liberado automaticamente.</p>
       </div>
-
-      <!-- Seletor de Módulo/Nível do Quiz -->
-      <div class="quiz-module-selector">
-        <button type="button" class="quiz-mod-btn active" data-qmod="mod1" onclick="selectQuizModule('mod1', this)">
-          <span class="qmod-lvl">Nível 1 • Iniciante</span>
-          <strong>Mód. 1: Conjuntos & Lógica</strong>
-        </button>
-        <button type="button" class="quiz-mod-btn" data-qmod="mod2" onclick="selectQuizModule('mod2', this)">
-          <span class="qmod-lvl">Nível 2 • Intermediário</span>
-          <strong>Mód. 2: Espaços Euclidianos</strong>
-        </button>
-        <button type="button" class="quiz-mod-btn" data-qmod="mod3" onclick="selectQuizModule('mod3', this)">
-          <span class="qmod-lvl">Nível 3 • Avançado</span>
-          <strong>Mód. 3: Transformações Lineares</strong>
-        </button>
-        <button type="button" class="quiz-mod-btn" data-qmod="mod4" onclick="selectQuizModule('mod4', this)">
-          <span class="qmod-lvl">Nível 4 • Master</span>
-          <strong>Mód. 4: P.A., P.G. & Filas</strong>
-        </button>
-        <a class="quiz-mod-btn quiz-page-link" href="{{ url_for('quiz_detail', slug='modelagem-matematica') }}">
-          <span class="qmod-lvl">Nível 5 • Especialista</span>
-          <strong>Mód. 5: Modelagem Matemática →</strong>
-        </a>
-      </div>
-
-      <div class="quiz-card-wrapper">
-        <div class="quiz-status">
-          <span id="quizModuleBadge" class="quiz-active-badge">Módulo 1 • Nível Iniciante</span>
-          <span id="quizProgText">Questão 1 de 3</span>
-          <span id="scoreText">Experiência: 300 XP</span>
-        </div>
-
-        <div id="quizContainer"></div>
-
-        <div id="quizFinished" class="quiz-finished hidden">
-          <div class="congrats-icon">🏆</div>
-          <h3 id="quizDoneTitle">Módulo Concluído com Sucesso!</h3>
-          <p id="quizFinalMsg">Você dominou este nível! Escolha outro módulo acima ou emita seu certificado.</p>
-          <div class="quiz-end-actions">
-            <a href="#certificado" class="btn btn-primary" onclick="unlockCertificate()">🎓 Emitir Meu Certificado</a>
-            <button type="button" class="btn btn-secondary" onclick="restartCurrentModuleQuiz()">🔄 Refazer este Módulo</button>
-          </div>
-        </div>
+      <div class="quiz-home-actions">
+        <span><strong>{{ stats.xp }} XP</strong> acumulados</span>
+        <a class="btn btn-primary" href="{{ url_for('quizzes_page') }}">Abrir meus quizzes</a>
       </div>
     </section>
 
     <!-- =====================================================================
          SEÇÃO 7: CERTIFICADO OFICIAL
          ===================================================================== -->
+    {% if stats.completed_modules == stats.total_modules %}
     <section id="certificado" class="section-box">
       <div class="section-header">
         <span class="tag-title">Certificação Acadêmica</span>
@@ -886,7 +853,7 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
 
       <div class="cert-form-box">
         <div class="cert-input-row">
-          <input type="text" id="studentNameInput" placeholder="Digite seu Nome Completo" value="Luan Gabriel Lins Galvão">
+          <input type="text" id="studentNameInput" placeholder="Digite seu Nome Completo" value="{{ current_user.name }}">
           <button type="button" class="btn btn-primary" onclick="updateCertificate()">Atualizar Nome</button>
           <button type="button" class="btn btn-secondary" onclick="window.print()">🖨️ Baixar / Imprimir PDF</button>
         </div>
@@ -912,7 +879,7 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
           </div>
 
           <div class="cert-student-name" id="certNameDisplay">
-            Luan Gabriel Lins Galvão
+            {{ current_user.name }}
           </div>
 
           <div class="cert-description">
@@ -959,6 +926,23 @@ eq 0 \Rightarrow$ $T$ é bijetora (<strong>isomorfismo</strong>). Somando $u + v
         </div>
       </div>
     </section>
+    {% else %}
+    <section id="certificado" class="certificate-locked">
+      <span class="certificate-lock-icon">🎓</span>
+      <div><span class="tag-title">Certificado bloqueado</span><h2>Conclua os 5 módulos para emitir</h2><p>Você concluiu {{ stats.completed_modules }} de {{ stats.total_modules }} módulos. Continue sua trilha para liberar o certificado.</p></div>
+      <a class="btn btn-primary" href="{{ url_for('dashboard') }}">Ver meu progresso</a>
+    </section>
+    {% endif %}
+    {% else %}
+    <section class="locked-home-section">
+      <div class="locked-home-icon">🔐</div>
+      <span class="tag-title">Conteúdo protegido</span>
+      <h2>Aulas, simuladores e quizzes são liberados com sua conta</h2>
+      <p>Você começa com 0 XP. Estude o primeiro módulo, alcance 70% no quiz e desbloqueie o próximo nível. Cada dia de atividade aumenta sua ofensiva.</p>
+      <a class="btn btn-primary" href="{{ url_for('login_page') }}">Criar conta gratuita</a>
+      <a class="btn btn-secondary" href="{{ url_for('login_page') }}">Já tenho uma conta</a>
+    </section>
+    {% endif %}
   </main>
 
   <!-- Rodapé com Redes Sociais, GitHub e YouTube -->

@@ -7,8 +7,11 @@ Plataforma educacional de Modelagem e Simulação Matemática construída com Fl
 - Cinco módulos, incluindo **Modelagem Matemática Aplicada**.
 - Páginas próprias para catálogo, conteúdo de cada módulo e cada quiz.
 - Quizzes com respostas mantidas no backend e aprovação a partir de 70%.
-- Cadastro e login com senha protegida por hash.
-- Histórico de tentativas e melhor pontuação por módulo.
+- Cadastro e login com senha protegida por hash; conteúdos e APIs acadêmicas exigem sessão.
+- XP calculado pelo melhor resultado de cada módulo, com bônus de conclusão e proteção contra repetição artificial.
+- Ofensiva baseada em dias consecutivos com atividade real de estudo.
+- Desbloqueio progressivo: o próximo módulo é liberado após a conclusão do anterior.
+- Painel do aluno com XP, nível, ofensiva, progresso e histórico de tentativas.
 - Simuladores de conjuntos, vetores, transformações, sequências e filas.
 - API JSON para módulos, quizzes, autenticação e progresso.
 
@@ -51,6 +54,8 @@ As tabelas são criadas automaticamente na inicialização. Para uma evolução 
 ## Rotas principais
 
 - `/` — experiência completa original.
+- `/entrar` — cadastro e login.
+- `/painel` — resumo pessoal de XP, ofensiva e progresso.
 - `/modulos` e `/modulos/<slug>` — catálogo e aulas.
 - `/quiz` e `/quiz/<slug>` — catálogo e avaliação.
 - `/api/health` — diagnóstico da aplicação.

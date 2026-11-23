@@ -48,22 +48,25 @@ async function handleCredentialLogin(event) {
   if (authMode === "register") payload.name = document.getElementById("authName").value.trim();
   try {
     const data = await window.apiRequest(`/api/auth/${authMode}`, { method: "POST", body: JSON.stringify(payload) });
-    applyLoggedUser(data.user);
-    closeAuthModal();
-    window.showToast(authMode === "login" ? "Bem-vindo de volta!" : "Conta criada com sucesso!");
+    window.location.href = "/painel";
   } catch (error) { window.showToast(error.message, "error"); }
 }
 
-function applyLoggedUser(user) {
+function applyLoggedUser(user, stats = {}) {
   if (!user) return;
-  document.getElementById("navUserText").textContent = user.name.split(" ")[0];
-  document.getElementById("authTriggerBtn").classList.add("logged-in");
-  document.getElementById("welcomeUserTitle").textContent = `Olá, ${user.name.split(" ")[0]}!`;
-  document.getElementById("studentNameInput").value = user.name;
-  updateCertificate();
+  const userText = document.getElementById("navUserText");
+  const authButton = document.getElementById("authTriggerBtn");
+  if (userText) userText.textContent = user.name.split(" ")[0];
+  if (authButton) authButton.classList.add("logged-in");
+  const xp = document.getElementById("xpPoints");
+  const streak = document.getElementById("streakCount");
+  if (xp) xp.textContent = stats.xp ?? 0;
+  if (streak) streak.textContent = stats.streak ?? 0;
+  const nameInput = document.getElementById("studentNameInput");
+  if (nameInput) { nameInput.value = user.name; updateCertificate(); }
 }
 
-document.addEventListener("academy:session", (event) => { if (event.detail.user) applyLoggedUser(event.detail.user); });
+document.addEventListener("academy:session", (event) => { if (event.detail.user) applyLoggedUser(event.detail.user, event.detail.stats); });
 
 function socialLogin() { window.showToast("Login social exige credenciais OAuth. Use e-mail e senha nesta versão.", "error"); }
 function toggleElement(id) { document.getElementById(id)?.classList.toggle("hidden"); }
@@ -82,10 +85,20 @@ function filterExercises(filter, button) {
   if (button) button.classList.add("active");
 }
 function jumpToSectionWithFilter(section, filter) {
+  if (document.body.dataset.authenticated !== "true") { window.location.href = "/entrar"; return; }
+  const moduleNumber = Number(filter.replace("mod", ""));
+  if (moduleNumber > Number(document.body.dataset.unlockedCount)) {
+    window.location.href = "/painel?locked=" + filter;
+    return;
+  }
   document.getElementById(section).scrollIntoView({ behavior: "smooth" });
   if (section === "videos") filterVideos(filter); else filterExercises(filter);
 }
-function jumpToQuizModule(module) { document.getElementById("quiz").scrollIntoView({ behavior: "smooth" }); selectQuizModule(module); }
+function jumpToQuizModule(module) {
+  if (document.body.dataset.authenticated !== "true") { window.location.href = "/entrar"; return; }
+  const slugs = { mod1: "conjuntos-logica", mod2: "espacos-euclidianos", mod3: "transformacoes-lineares", mod4: "sequencias-filas" };
+  window.location.href = `/quiz/${slugs[module] || ""}`;
+}
 
 function parseSet(id) { return new Set(document.getElementById(id).value.split(",").map((item) => item.trim()).filter(Boolean)); }
 function formatSet(values) { return `{ ${[...values].join(", ")} }`; }
@@ -173,4 +186,7 @@ function restartCurrentModuleQuiz() { selectQuizModule(activeQuizModule); }
 function unlockCertificate() { window.showToast("Certificado liberado para personalização."); }
 function updateCertificate() { const value = document.getElementById("studentNameInput").value.trim(); if (value) document.getElementById("certNameDisplay").textContent = value; }
 
-document.addEventListener("DOMContentLoaded", () => { calculateSets(); toggleVal("Q"); toggleVal("Q"); selectQuizModule("mod1"); });
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("setA")) calculateSets();
+  if (document.getElementById("toggleQ")) { toggleVal("Q"); toggleVal("Q"); }
+});

@@ -25,6 +25,8 @@
       window.currentAcademyUser = data.user;
       const sessionLabel = document.getElementById("sessionLabel");
       if (sessionLabel && data.user) sessionLabel.textContent = data.user.name.split(" ")[0];
+      document.querySelectorAll('[data-stat="xp"]').forEach((element) => { element.textContent = data.stats?.xp ?? 0; });
+      document.querySelectorAll('[data-stat="streak"]').forEach((element) => { element.textContent = data.stats?.streak ?? 0; });
       document.dispatchEvent(new CustomEvent("academy:session", { detail: data }));
     } catch (_) {
       window.currentAcademyUser = null;
@@ -32,4 +34,17 @@
   }
 
   hydrateSession();
+
+  document.addEventListener("click", async (event) => {
+    const logout = event.target.closest("#logoutButton");
+    if (!logout) return;
+    logout.disabled = true;
+    try {
+      await window.apiRequest("/api/auth/logout", { method: "POST" });
+      window.location.href = "/";
+    } catch (error) {
+      logout.disabled = false;
+      window.showToast(error.message, "error");
+    }
+  });
 })();
